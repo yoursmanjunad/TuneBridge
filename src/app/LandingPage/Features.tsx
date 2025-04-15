@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LucideUserCheck, LucideListMusic, LucideRocket } from "lucide-react";
+import { GlobeLock } from 'lucide-react';
+import { Binoculars } from 'lucide-react';
 import { ArrowBigUpDash } from 'lucide-react';
 export function Features(){
     const steps = [
@@ -11,12 +12,12 @@ export function Features(){
           {
             title: "Smart Matching",
             description: "Finds the best matching song on YouTube for each Spotify track.",
-            icon: <LucideListMusic className="w-10 h-10 text-green-600" />,
+            icon: <Binoculars className="w-10 h-10 text-green-600" />,
           },
           {
             title: "Privacy First",
             description: "We never store your data. Authenntication is 100% secure. ",
-            icon: <LucideRocket className="w-10 h-10 text-purple-600" />,
+            icon: <GlobeLock className="w-10 h-10 text-purple-600" />,
           },
     ]
     return (
