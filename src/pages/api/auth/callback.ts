@@ -1,4 +1,6 @@
 import axios from "axios";
+import { serialize } from "cookie";
+
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -51,10 +53,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const playlists = playlistsResponse.data.items;
     console.log("🎶 User Playlists:", playlists);
 
-    // 🛠️ Optionally: Store user and playlists in DB
+    // ✅ Fetch and log songs in each playlist
+    for (const playlist of playlists) {
+      console.log(`\n🎵 Playlist: ${playlist.name} by ${playlist.owner.display_name}`);
 
-    // ✅ Redirect to dashboard or success page
-    res.redirect("/dashboard");
+      const tracks: any[] = [];
+      let nextUrl = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`;
+
+      while (nextUrl) {
+        const trackResponse = await axios.get(nextUrl, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const data = trackResponse.data;
+        tracks.push(...data.items);
+        nextUrl = data.next; // pagination
+      }
+
+      // const songNames = tracks.map((item) => item.track?.name);
+      // console.log(`📀 ${songNames.length} Songs:`, songNames.slice(0, 10)); // log first 10
+    }
+
+    res.setHeader(
+      "Set-Cookie",
+      serialize("spotify_token", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 3600,
+        path: "/",
+      })
+    );
+    res.redirect("/dashboard"); // or return JSON if needed
   } catch (error: any) {
     console.error("❌ Error:", error.response?.data || error.message);
     res.status(500).json({ error: "Something went wrong" });
