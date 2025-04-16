@@ -1,31 +1,62 @@
-// pages/api/auth/spotify/callback.ts
-import type { NextApiRequest, NextApiResponse } from "next"
-import axios from "axios"
+import axios from "axios";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const code = req.body.code
-  const client_id = process.env.SPOTIFY_CLIENT_ID
-  const client_secret = process.env.SPOTIFY_CLIENT_SECRET
-  const redirect_uri = process.env.SPOTIFY_REDIRECT_URI || "http://localhost:3000/callback/spotify"
+  const code = req.query.code as string;
+
+  const redirect_uri = "http://localhost:3000/api/auth/callback"; // must match Spotify settings
+
+  const params = new URLSearchParams();
+  params.append("grant_type", "authorization_code");
+  params.append("code", code);
+  params.append("redirect_uri", redirect_uri);
 
   try {
-    const params = new URLSearchParams()
-    params.append("grant_type", "authorization_code")
-    params.append("code", code)
-    params.append("redirect_uri", redirect_uri)
+    // 🔐 Exchange code for tokens
+    const tokenResponse = await axios.post(
+      "https://accounts.spotify.com/api/token",
+      params,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization:
+            "Basic " +
+            Buffer.from(
+              `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
+            ).toString("base64"),
+        },
+      }
+    );
 
-    const tokenResponse = await axios.post("https://accounts.spotify.com/api/token", params, {
+    const accessToken = tokenResponse.data.access_token;
+    console.log("✅ Access Token:", accessToken);
+
+    // 🎧 Fetch user's Spotify profile
+    const userProfileResponse = await axios.get("https://api.spotify.com/v1/me", {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization:
-          "Basic " + Buffer.from(`${client_id}:${client_secret}`).toString("base64"),
+        Authorization: `Bearer ${accessToken}`,
       },
-    })
+    });
 
-    const { access_token } = tokenResponse.data
-    res.status(200).json({ accessToken: access_token })
-  } catch (err) {
-    console.error("Token exchange failed:", err)
-    res.status(500).json({ error: "Token exchange failed" })
+    const userProfile = userProfileResponse.data;
+    console.log("👤 User Profile:", userProfile);
+
+    // 🎵 Fetch user playlists
+    const playlistsResponse = await axios.get("https://api.spotify.com/v1/me/playlists", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const playlists = playlistsResponse.data.items;
+    console.log("🎶 User Playlists:", playlists);
+
+    // 🛠️ Optionally: Store user and playlists in DB
+
+    // ✅ Redirect to dashboard or success page
+    res.redirect("/dashboard");
+  } catch (error: any) {
+    console.error("❌ Error:", error.response?.data || error.message);
+    res.status(500).json({ error: "Something went wrong" });
   }
 }
