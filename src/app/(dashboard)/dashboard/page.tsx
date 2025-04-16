@@ -71,8 +71,8 @@ const HomeDashboard = () => {
 
         <div className="flex gap-4">
           <Button variant="default" onClick={() => {
-    window.location.href = `/api/auth/spotify`;
-  }}>Connect to Spotify</Button>
+            window.location.href = `/api/auth/spotify`;
+              }}>Connect to Spotify</Button>
           <Button variant="outline">Connect to YouTube</Button>
         </div>
 
