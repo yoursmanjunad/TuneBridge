@@ -4,7 +4,7 @@ import { FaSpotify } from "react-icons/fa";
 import { CiYoutube } from "react-icons/ci";
 const HeroSection = () => {
   return (
-    <section className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-blue-500 to-blue-700 text-white text-center p-4">
+    <section className="flex flex-col items-center justify-center h-screen  text-grey-800 text-center p-4">
         <h1 className="text-5xl font-bold mb-4">Transfer Your Playlists Seamlessly</h1>
         <p className=" text-lg mb-8">From Spotify to YouTube in just a click.</p>
         <div  className='mt-2 flex justify-center gap-4'>
