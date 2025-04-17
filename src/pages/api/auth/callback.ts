@@ -41,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const userProfile = userProfileResponse.data;
-    console.log("👤 User Profile:", userProfile);
+    // console.log("👤 User Profile:", userProfile);
 
     // 🎵 Fetch user playlists
     const playlistsResponse = await axios.get("https://api.spotify.com/v1/me/playlists", {
@@ -51,11 +51,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const playlists = playlistsResponse.data.items;
-    console.log("🎶 User Playlists:", playlists);
+    // console.log("🎶 User Playlists:", playlists);
 
     // ✅ Fetch and log songs in each playlist
     for (const playlist of playlists) {
-      console.log(`\n🎵 Playlist: ${playlist.name} by ${playlist.owner.display_name}`);
+      // console.log(`\n🎵 Playlist: ${playlist.name} by ${playlist.owner.display_name}`);
 
       const tracks: any[] = [];
       let nextUrl = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`;
