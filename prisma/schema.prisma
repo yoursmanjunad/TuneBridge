@@ -11,32 +11,33 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  clerkId   String     @unique
-  email     String     @unique
-  username  String     @unique
-  fullName  String?
-  imageUrl  String?
-  playlists Playlist[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  spotifyUserId   String? // on User // on Playlist
- // on Song
+  id               String             @id @default(cuid())
+  clerkId          String             @unique
+  email            String             @unique
+  username         String             @unique
+  fullName         String?
+  imageUrl         String?
+  playlists        Playlist[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  spotifyUserId    String? // on User // on Playlist
+  // on Song
   ListeningHistory ListeningHistory[]
 }
 
 model Playlist {
-  id          String   @id @default(cuid())
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
-  name        String
-  source      String
-  destination String
-  status      String
-  songCount   Int
-  songs       Song[]
+  id                String   @id @default(cuid())
+  user              User     @relation(fields: [userId], references: [id])
+  userId            String
+  name              String
+  source            String
+  destination       String
+  status            String
+  songCount         Int
+  playlistImage     String?
+  songs             Song[]
   spotifyPlaylistId String?
-  createdAt   DateTime @default(now())
+  createdAt         DateTime @default(now())
 }
 
 model ListeningHistory {
@@ -59,6 +60,7 @@ model Song {
   sourceUrl        String?
   order            Int
   spotifyTrackId   String?
+  albumUrl         String?
   listeningHistory ListeningHistory[] // ✅ Now works because ListeningHistory is defined earlier
   createdAt        DateTime           @default(now())
 }
