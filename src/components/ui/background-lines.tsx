@@ -145,3 +145,4 @@ const SVG = ({
     </motion.svg>
   );
 };
+export default BackgroundLines;
