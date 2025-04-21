@@ -1,15 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GlobeLock } from 'lucide-react';
-import { Binoculars } from 'lucide-react';
-import { ArrowBigUpDash } from 'lucide-react';
+
 import { WobbleCard } from "@/components/ui/wobble-card";
 export function Features(){
     
     return (
 
-    <section className="py-20 bg-muted/40">
-      <h1 className="flex justify-center items-center font-black font-bold text-4xl ">Powerful Features to Move Your Music</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto w-full">
+    <section className="py-20 ">
+      <h1 className="flex justify-center items-center font-black font-bold text-3xl py-10 ">Powerful Features to Move Your Music</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-4xl mx-auto w-full">
       <WobbleCard
         containerClassName="col-span-1 lg:col-span-2 h-full bg-pink-800 min-h-[500px] lg:min-h-[300px]"
         className=""

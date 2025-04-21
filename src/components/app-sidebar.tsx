@@ -54,24 +54,14 @@ const data = {
       icon: LayoutDashboardIcon,
     },
     {
-      title: "Lifecycle",
-      url: "/lifecycle", // Update with proper route
-      icon: ListIcon,
-    },
-    {
       title: "Analytics",
       url: "/analytics", // Update with proper route
       icon: BarChartIcon,
     },
     {
-      title: "Projects",
-      url: "/projects", // Update with proper route
+      title: "Playlists",
+      url: "/playlists", // Update with proper route
       icon: FolderIcon,
-    },
-    {
-      title: "Team",
-      url: "/team", // Update with proper route
-      icon: UsersIcon,
     },
   ],
   

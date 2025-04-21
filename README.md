@@ -123,6 +123,7 @@ This tool lets me sync my Spotify playlists directly to YouTube, giving me full 
 - [ ] SEO Meta Tags for Landing Page  
 - [ ] Rate Limiting for API Calls  
 - [ ] Error Handling  
+- [ ] Toast Effect
 
 ---
 

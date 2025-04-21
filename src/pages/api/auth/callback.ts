@@ -130,3 +130,61 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 //     res.status(500).json({ error: "Spotify token exchange failed" });
 //   }
 // }
+
+// pages/api/auth/callback.js
+// import axios from "axios";
+// import { serialize } from "cookie";
+// import type { NextApiRequest, NextApiResponse } from "next";
+
+// export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+//   const code = req.query.code as string;
+
+//   if (!code) {
+//     return res.status(400).json({ error: "Missing authorization code" });
+//   }
+
+//   const redirect_uri = "http://localhost:3000/api/auth/callback"; // must match Spotify settings
+
+//   const params = new URLSearchParams();
+//   params.append("grant_type", "authorization_code");
+//   params.append("code", code);
+//   params.append("redirect_uri", redirect_uri);
+
+//   try {
+//     // 🔐 Exchange code for tokens
+//     const tokenResponse = await axios.post(
+//       "https://accounts.spotify.com/api/token",
+//       params,
+//       {
+//         headers: {
+//           "Content-Type": "application/x-www-form-urlencoded",
+//           Authorization:
+//             "Basic " +
+//             Buffer.from(
+//               `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
+//             ).toString("base64"),
+//         },
+//       }
+//     );
+
+//     const accessToken = tokenResponse.data.access_token;
+//     console.log("✅ Access Token:", accessToken);
+
+//     // Fetch user data as needed...
+
+//     // Set the token in a secure cookie
+//     res.setHeader(
+//       "Set-Cookie",
+//       serialize("spotify_token", accessToken, {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === "production",
+//         maxAge: 3600,
+//         path: "/",
+//       })
+//     );
+//     res.redirect("/dashboard"); // Redirect to your dashboard or desired route
+//   } catch (error: any) {
+//     console.error("❌ Error:", error.response?.data || error.message);
+//     res.status(500).json({ error: "Something went wrong" });
+//   }
+// }
