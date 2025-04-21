@@ -6,6 +6,7 @@ import CallToAction from "./LandingPage/CallToAction";
 import Footer from "./LandingPage/Footer";
 import TextGen from "./LandingPage/TextGen";
 import BentoGridThirdDemo from "@/components/ui/bento-ex";
+import LampDemo from "@/components/ui/lamp";
 export default async function Home() {
   return (
     <>
@@ -14,6 +15,7 @@ export default async function Home() {
     <TextGen />
     <HowItWorks />
     <Features />
+    <LampDemo />
     <CallToAction />
     <Footer />
     </>

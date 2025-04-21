@@ -1,7 +1,33 @@
 # TuneBridge
 You might have downloaded Spotify, created playlists, but if you want to migrate to other streaming platform like YouTube, the major thing that pulls back you back to Spotify is your playlists. What if you can export them? TuneBridge, provides you that super power to export your playlists on Spotify to YouTube. 
 
-## Database Schema 
+## Tech Stack 
+This project built on top of trending and essential tech stack tools. 
+- Typescript
+- React
+- Next Js
+- Tailwind CSS
+- Prisma
+- Neon DB (PostgreSql)
+- Shadcn UI
+- Aceternity UI
+- Clerk Authentication
+- Spotify API
+- YouTube API
+
+### 🎧 Why I Built This Project
+As someone who listens to a lot of music over 70,000 hours of Spotify listening history I’ve always loved curating and discovering new playlists. Recently, I made the switch from Chrome to Brave and stopped paying for YouTube Premium, since Brave already blocks ads effectively.
+
+With that shift, I found myself spending more time on YouTube whether it's for funny videos, podcasts, or even just listening to music. But there was one big problem:
+
+I missed my carefully crafted Spotify playlists.
+
+So I decided to build a solution.
+This tool lets me sync my Spotify playlists directly to YouTube, giving me full access to my music across platforms without feeling locked into a single service.
+
+
+
+<!-- ## Database Schema 
 ┌────────────────────────────┐
 │          User              │
 ├────────────────────────────┤
@@ -72,7 +98,7 @@ You might have downloaded Spotify, created playlists, but if you want to migrate
 │ userId: String (FK)        │
 │ listenedAt: DateTime       │
 └────────────────────────────┘
-
+ -->
 
 
 ## ✅ Features
@@ -103,10 +129,13 @@ You might have downloaded Spotify, created playlists, but if you want to migrate
 ## 🛠️ Developer Setup
 
 - [x] Tailwind + ShadCN UI Setup  
-- [ ] Prisma schema defined  
-- [ ] NeonDB Connected  
-- [ ] Add Prisma Seed Script  
-- [ ] Clerk Middleware to Protect Routes  
+- [x] Prisma schema defined  
+- [x] NeonDB Connected  
+- [x] Add Prisma Seed Script  
+- [x] Clerk Middleware to Protect Routes  
 - [ ] Create REST API Routes for Spotify/YouTube  
 - [ ] Utility Functions for Syncing  
 - [ ] Analytics Table for Trends  
+
+
+- [ ] Features section padding 

@@ -76,3 +76,4 @@ const Noise = () => {
     ></div>
   );
 };
+export default WobbleCard;
