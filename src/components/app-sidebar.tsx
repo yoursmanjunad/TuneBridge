@@ -24,7 +24,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-
+import analytics from "@/app/dashboard/analytics";
 const data = {
   user: {
     name: "Manjunath",
@@ -39,7 +39,7 @@ const data = {
     },
     {
       title: "Analytics",
-      url: "#",
+      url: "/dashboard/analytics",
       icon: IconChartBar,
     },
     {

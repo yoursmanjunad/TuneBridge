@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -128,7 +128,7 @@ const chartData = [
 
 const chartConfig = {
   visitors: {
-    label: "Visitors",
+    label: "Listening Activity",
   },
   desktop: {
     label: "Desktop",
@@ -167,7 +167,7 @@ export function ChartAreaInteractive() {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
+        <CardTitle>Listening Activity</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
             Total for the last 3 months

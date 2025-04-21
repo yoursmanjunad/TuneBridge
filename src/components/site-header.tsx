@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { BsYoutube } from "react-icons/bs";
 import { FaSpotify } from "react-icons/fa";
+import ModeToggle from "./ui/MoodToggle";
 export function SiteHeader() {
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -31,6 +32,7 @@ export function SiteHeader() {
           </Button>
           <Button
             variant="ghost"
+            // className="bg-red-500 text-white hover:bg-red-600"
             onClick={() => {
               window.location.href = `/api/auth/spotify`;
             }}
@@ -38,6 +40,7 @@ export function SiteHeader() {
             <BsYoutube className="text-red-500" />
             Connect YouTube
           </Button>
+          <ModeToggle />
         </div>
       </div>
     </header>
