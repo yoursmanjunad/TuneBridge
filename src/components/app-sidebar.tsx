@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { CircleDollarSign } from 'lucide-react';
+import { BarChartIcon, CircleDollarSign, FolderIcon, LayoutDashboardIcon, ListIcon, UsersIcon } from 'lucide-react';
 import {
   IconChartBar,
   IconDashboard,
@@ -24,28 +24,54 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import analytics from "@/app/dashboard/analytics";
 const data = {
   user: {
     name: "Manjunath",
     email: "imanjunad@gmail.com",
     avatar: "/avatars/shadcn.jpg",
   },
+  // navMain: [
+  //   {
+  //     title: "Dashboard",
+  //     url: "#",
+  //     icon: IconDashboard,
+  //   },
+  //   {
+  //     title: "Analytics",
+  //     url: "/analytics",
+  //     icon: IconChartBar,
+  //   },
+  //   {
+  //     title: "Playlists",
+  //     url: "#",
+  //     icon: IconFolder,
+  //   },
+  // ],
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
+      url: "/dashboard", // Update with proper route
+      icon: LayoutDashboardIcon,
+    },
+    {
+      title: "Lifecycle",
+      url: "/lifecycle", // Update with proper route
+      icon: ListIcon,
     },
     {
       title: "Analytics",
-      url: "/dashboard/analytics",
-      icon: IconChartBar,
+      url: "/analytics", // Update with proper route
+      icon: BarChartIcon,
     },
     {
-      title: "Playlists",
-      url: "#",
-      icon: IconFolder,
+      title: "Projects",
+      url: "/projects", // Update with proper route
+      icon: FolderIcon,
+    },
+    {
+      title: "Team",
+      url: "/team", // Update with proper route
+      icon: UsersIcon,
     },
   ],
   
@@ -91,7 +117,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
