@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-
+import { Montserrat } from "next/font/google";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
@@ -19,15 +19,18 @@ const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist-sans",
 });
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  // weights: ["400", "500", "600", "700"],
+  variable: "--font-montserrat",
+});
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <>
-    <html lang="en" suppressHydrationWarning></html>
+    <html lang="en" className={`${montserrat.variable} ${geist.variable}`} suppressHydrationWarning>
     <ClerkProvider>
-    <html lang="en" className={`${geist.variable}`}>
       <body>
       <ThemeProvider
             attribute="class"
@@ -39,8 +42,8 @@ export default function RootLayout({
         <Toaster />
         </ThemeProvider>
       </body>
-    </html>
     </ClerkProvider>
-    </>
+    </html>
+    
   );
 }

@@ -91,8 +91,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
     }
-
-    return res.status(200).json({ message: "✅ Data imported successfully" });
+    return res.redirect('/dashboard?connected=success');
   } catch (error: any) {
     console.error("❌ Error importing Spotify data:", error.response?.data || error.message);
     return res.status(500).json({ error: "Failed to import Spotify data" });

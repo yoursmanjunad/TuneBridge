@@ -13,7 +13,6 @@ const Navbar = () => {
         <Button variant="ghost">How it works</Button>
         <Button variant="ghost">Features</Button>
         <Button onClick={() => router.push("/dashboard")}> Dashboard</Button>
-        <AnimatedNumber value={100000} />
         <ModeToggle />
       </div>
     </nav>

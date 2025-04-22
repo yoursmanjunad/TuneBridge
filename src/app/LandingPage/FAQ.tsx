@@ -3,14 +3,13 @@ import {
     AccordionItem,
     AccordionTrigger,
     AccordionContent,
-} from 'components/motion-primitives/accordion'; // Assuming this path is correct
+} from 'components/motion-primitives/accordion'; // Importing Accordion components from a custom library
 
 import { ChevronRight } from 'lucide-react';
 
 export function AccordionVariant() {
     return (
       <Accordion
-
         className='flex flex-col items-center justify-center max-w-screen-md mx-auto px-4'
         transition={{ type: 'spring', stiffness: 120, damping: 20 }}
         variants={{
