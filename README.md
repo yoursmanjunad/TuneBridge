@@ -1,142 +1,120 @@
-# TuneBridge
-You might have downloaded Spotify, created playlists, but if you want to migrate to other streaming platform like YouTube, the major thing that pulls back you back to Spotify is your playlists. What if you can export them? TuneBridge, provides you that super power to export your playlists on Spotify to YouTube. 
+# Tune Bridge
 
-## Tech Stack 
-This project built on top of trending and essential tech stack tools. 
-- Typescript
-- React
-- Next Js
-- Tailwind CSS
-- Prisma
-- Neon DB (PostgreSql)
-- Shadcn UI
-- Aceternity UI
-- Clerk Authentication
-- Spotify API
-- YouTube API
+Effortlessly transfer your playlists from Spotify to YouTube Music, with personalized listening insights coming soon.
 
-### 🎧 Why I Built This Project
-As someone who listens to a lot of music over 70,000 hours of Spotify listening history I’ve always loved curating and discovering new playlists. Recently, I made the switch from Chrome to Brave and stopped paying for YouTube Premium, since Brave already blocks ads effectively.
+## ✨ Features
 
-With that shift, I found myself spending more time on YouTube whether it's for funny videos, podcasts, or even just listening to music. But there was one big problem:
+* Seamless authentication with Spotify and Google (for YouTube).
+* Browse and select your Spotify playlists for transfer.
+* Accurately match and create playlists in your YouTube account.
+* Handles various playlist sizes.
+* Securely connects using OAuth 2.0.
+* *(If implemented)* Dashboard for personalized listening activity charts (e.g., Top Tracks, Artists, Genres, Listening Time).
+* *(Mention any other specific features, e.g., handling duplicates, progress indication during transfer).*
+<!-- 
+---
 
-I missed my carefully crafted Spotify playlists.
+<!-- ## 🚀 Live Demo
 
-So I decided to build a solution.
-This tool lets me sync my Spotify playlists directly to YouTube, giving me full access to my music across platforms without feeling locked into a single service.
+Experience it live! [Link to your deployed application]
 
+*(**Recruiter Tip:** A live demo is CRUCIAL. Make this link prominent).*
+*(Consider adding a GIF or screenshots here as well for a quick visual showcase).*
 
-
-<!-- ## Database Schema 
-┌────────────────────────────┐
-│          User              │
-├────────────────────────────┤
-│ id: String (PK)            │
-│ clerkId: String (U)        │
-│ email: String (U)          │
-│ username: String (U)       │
-│ fullName: String?          │
-│ imageUrl: String?          │
-│ spotifyUserId: String?     │
-│ createdAt: DateTime        │
-│ updatedAt: DateTime        │
-├────────────────────────────┤
-│ playlists: Playlist[]      │
-│ listeningHistory:          │
-│   ListeningHistory[]       │
-└────────────────────────────┘
-             ▲
-             │ 1
-             │
-             │
-             ▼
-┌────────────────────────────┐
-│        Playlist            │
-├────────────────────────────┤
-│ id: String (PK)            │
-│ userId: String (FK)        │
-│ name: String               │
-│ source: String             │
-│ destination: String        │
-│ status: String             │
-│ songCount: Int             │
-│ spotifyPlaylistId: String? │
-│ createdAt: DateTime        │
-├────────────────────────────┤
-│ songs: Song[]              │
-└────────────────────────────┘
-             ▲
-             │ 1
-             │
-             ▼
-┌────────────────────────────┐
-│          Song              │
-├────────────────────────────┤
-│ id: String (PK)            │
-│ playlistId: String (FK)    │
-│ title: String              │
-│ artist: String             │
-│ album: String?             │
-│ duration: Int?             │
-│ sourceUrl: String?         │
-│ order: Int                 │
-│ spotifyTrackId: String?    │
-│ createdAt: DateTime        │
-├────────────────────────────┤
-│ listeningHistory:          │
-│   ListeningHistory[]       │
-└────────────────────────────┘
-             ▲
-             │ 1
-             │
-             ▼
-┌────────────────────────────┐
-│    ListeningHistory        │
-├────────────────────────────┤
-│ id: String (PK)            │
-│ songId: String (FK)        │
-│ userId: String (FK)        │
-│ listenedAt: DateTime       │
-└────────────────────────────┘
- -->
-
-
-## ✅ Features
-
-- [x] Landing Page  
-- [x] Clerk Authentication  
-- [x] Database Setup  
-- [ ] Database <-> Clerk Webhook  
-- [x] Spotify OAuth Flow (via API Route)  
-- [x] Fetch All Spotify Playlists  
-- [x] Store Playlists + Songs on DB  
-- [ ] Sync Playlist to YouTube  
-- [ ] Show Sync Status in Dashboard  
-- [ ] "Connect to Spotify" Button (Styled + Routed)  
-- [ ] Trends Dashboard (most played song, artists, year-wise stats)  
-- [ ] Export Trends to PDF  
-- [ ] YouTube OAuth Integration  
-- [ ] User Profile Page (profile picture, email, full name)  
-- [ ] Logout functionality  
-- [ ] Responsive Layout  
-- [ ] Dark Mode Toggle  
-- [ ] SEO Meta Tags for Landing Page  
-- [ ] Rate Limiting for API Calls  
-- [ ] Error Handling  
-- [ ] Toast Effect
+![Screenshot 1: Connect Page](link-to-screenshot1.png)
+![Screenshot 2: Playlist Selection](link-to-screenshot2.png)
+![Screenshot 3: Dashboard Sneak Peek (if charts implemented)](link-to-screenshot3.png) --> 
 
 ---
 
-## 🛠️ Developer Setup
+## 💡 Problem Solved
 
-- [x] Tailwind + ShadCN UI Setup  
-- [x] Prisma schema defined  
-- [x] NeonDB Connected  
-- [x] Add Prisma Seed Script  
-- [x] Clerk Middleware to Protect Routes  
-- [ ] Create REST API Routes for Spotify/YouTube  
-- [ ] Utility Functions for Syncing  
-- [ ] Analytics Table for Trends  
+Manually recreating playlists across different music streaming services is a tedious and time-consuming process. This application eliminates that frustration by providing a direct, automated way to migrate curated music collections from Spotify to YouTube Music.
 
 
-- [ ] Features section padding 
+---
+
+## ⚙️ Technologies Used
+
+* **Frontend:** Next Js
+    * Styling: [Tailwind CSS]
+    * UI Components: [Shadcn UI, Aceternity UI, Motion Primitives]
+    * State Management: [React Context]
+* **Backend (if applicable):** Next.js (API Routes), Node.js/Express,
+    * API Interaction: [ Axios]
+    * Authentication: [Clerk]
+* **Database:** [Prisma (ORM), PostgreSQL]
+* **Deployment:** [Vercel]
+* **APIs:** Spotify Web API, YouTube Data API (v3)
+
+
+---
+
+## 🧠 How It Works (High-Level Overview)
+
+1.  **Authentication:** Users securely connect their Spotify and Google accounts via OAuth 2.0, granting specific permissions (read Spotify playlists, manage YouTube playlists).
+2.  **Data Fetching:** The application fetches the user's selected playlists and track details from the Spotify Web API.
+3.  **Matching:** Tracks are searched for and matched against the YouTube Music catalog using the YouTube Data API.
+4.  **Transfer & Saving:** New playlists are created in the user's YouTube account, and the matched songs are added. Relevant user and playlist data are stored in the database ([Your Database, e.g., PostgreSQL via Prisma]).
+<!-- 5.  **(If applicable)** **Data Analysis:** Stored listening data is processed to generate personalized charts and insights displayed on the user dashboard. -->
+- High Level Architecture
+![High Level Architecture](./HighLevelArch.png)
+---
+
+## 🚧 Future Enhancements / Roadmap
+
+* Implement the full personalized listening activity dashboard.
+* Add support for transferring Liked Songs, Albums, and Artists.
+* Improve song matching accuracy.
+* Allow users to manage or delete imported playlists within the app.
+* Add options for handling transfer errors or missing tracks.
+* Optimize performance for very large playlists.
+
+
+---
+
+## 💻 Installation and Setup (Optional but Recommended)
+
+*(Only include if you want others to be able to run it locally. This is good practice for open-source projects).*
+
+1.  Clone the repository: `git clone [Your Repo URL]`
+2.  Navigate to the project directory: `cd [Your Project Folder]`
+3.  Install dependencies: `npm install` (or `yarn install`, `pnpm install`)
+4.  Set up environment variables: Create a `.env` file based on `.env.example`. You will need to obtain API credentials from:
+    * Spotify Developer Dashboard
+    * Google Cloud Console (for YouTube Data API)
+    * Database connection URL ([Your Database setup])
+5.  Run database migrations (if using Prisma): `npx prisma migrate dev`
+6.  Start the development server: `npm run dev` (or equivalent)
+
+*(**Recruiter Tip:** Demonstrates you can set up a development environment and structure a project for collaboration).*
+
+---
+
+## Lessons Learned & Challenges Faced
+
+
+* **Authentication Complexity:** Implementing the OAuth 2.0 flow for two different major platforms (Spotify and Google) presented unique challenges in managing redirects, tokens, and secure credential handling. Learned a lot about secure API authorization patterns.
+* **API Rate Limits & Quotas:** Discovering and working within the rate limits of external APIs required implementing error handling, retries, and potentially queuing mechanisms to ensure reliable data fetching for large requests (like big playlists).
+* **Data Mapping & Matching:** Matching songs accurately between two different catalogs based on potentially varied metadata (title, artist, album) involved designing robust search and matching logic. Learned the importance of fuzzy matching or leveraging platform-specific IDs where possible.
+* **Asynchronous Operations:** Handling multiple asynchronous API calls (fetching user, then playlists, then tracks for each playlist, then searching on YouTube, then saving to DB) required careful use of Promises, async/await, and potentially optimizing concurrent operations.
+* **Database Schema Design:** Designing a database schema ([mention DB/ORM]) to efficiently store user information, playlists, and track details while considering future features (like activity tracking) required thoughtful planning.
+
+
+---
+
+## ✍️ Author
+
+Manjunath Irukulla 
+[LinkedIn](https://www.linkedin.com/in/irumanjunath/])
+[GitHub](https://github.com/yoursmanjunad) 
+[Portfolio Website](https://www.manjunath.live/)
+Email: imanjunad@gmail.com
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details. *(Most portfolio projects use MIT).*
+
+---
