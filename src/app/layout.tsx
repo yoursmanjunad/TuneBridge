@@ -6,6 +6,7 @@ import { Geist } from "next/font/google";
 import { TRPCReactProvider } from "@/trpc/react";
 import {
   ClerkProvider,
+  SignedOut,
 } from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
@@ -41,6 +42,9 @@ export default function RootLayout({
         <TRPCReactProvider>{children}</TRPCReactProvider>
         <Toaster />
         </ThemeProvider>
+        <SignedOut>
+        <p>You are signed out.</p>
+      </SignedOut>
       </body>
     </ClerkProvider>
     </html>
