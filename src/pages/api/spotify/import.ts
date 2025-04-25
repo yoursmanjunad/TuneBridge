@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
 
-    // 3️⃣ Fetch playlists
+    // 3️⃣ Fetch user playlists
     const { data: playlistsRes } = await axios.get("https://api.spotify.com/v1/me/playlists", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -53,7 +53,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // 4️⃣ Create playlist in DB
       const createdPlaylist = await prisma.playlist.create({
         data: {
-          userId: user.id,
+          userId: user.id, // This is fine even for MongoDB since Prisma handles it as a string reference
           name,
           source: external_urls.spotify,
           destination: "",
@@ -80,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         await prisma.song.create({
           data: {
-            playlistId: createdPlaylist.id,
+            playlistId: createdPlaylist.id, // This remains a string
             title: track.name,
             artist: track.artists.map((a: any) => a.name).join(", "),
             album: track.album?.name || "",
@@ -91,7 +91,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
     }
-    return res.redirect('/dashboard?connected=success');
+
+    return res.redirect("/dashboard?connected=success");
   } catch (error: any) {
     console.error("❌ Error importing Spotify data:", error.response?.data || error.message);
     return res.status(500).json({ error: "Failed to import Spotify data" });

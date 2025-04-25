@@ -6,53 +6,43 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id               String             @id @default(cuid())
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
   clerkId          String             @unique
   email            String             @unique
   username         String             @unique
   fullName         String?
   imageUrl         String?
   playlists        Playlist[]
+  spotifyUserId    String?
+  listeningHistory ListeningHistory[]
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-  spotifyUserId    String? // on User // on Playlist
-  // on Song
-  ListeningHistory ListeningHistory[]
 }
 
 model Playlist {
-  id                String   @id @default(cuid())
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId
   user              User     @relation(fields: [userId], references: [id])
-  userId            String
   name              String
   source            String
   destination       String
   status            String
   songCount         Int
   playlistImage     String?
-  songs             Song[]
   spotifyPlaylistId String?
+  songs             Song[]
   createdAt         DateTime @default(now())
 }
 
-model ListeningHistory {
-  id         String   @id @default(cuid())
-  song       Song     @relation(fields: [songId], references: [id])
-  songId     String
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
-  listenedAt DateTime @default(now())
-}
-
 model Song {
-  id               String             @id @default(cuid())
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  playlistId       String             @db.ObjectId
   playlist         Playlist           @relation(fields: [playlistId], references: [id])
-  playlistId       String
   title            String
   artist           String
   album            String?
@@ -61,6 +51,15 @@ model Song {
   order            Int
   spotifyTrackId   String?
   albumUrl         String?
-  listeningHistory ListeningHistory[] // ✅ Now works because ListeningHistory is defined earlier
+  listeningHistory ListeningHistory[]
   createdAt        DateTime           @default(now())
+}
+
+model ListeningHistory {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  songId     String   @db.ObjectId
+  song       Song     @relation(fields: [songId], references: [id])
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  listenedAt DateTime @default(now())
 }
