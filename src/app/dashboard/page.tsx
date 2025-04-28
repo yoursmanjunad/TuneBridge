@@ -7,13 +7,11 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
-import { SpotifyConnectedToast } from "@/components/spotify-connected-toast"
 import data from "./data.json"
 
 export default function Page() {
   return (
     <>
-      <SpotifyConnectedToast />
       <SidebarProvider
         style={
           {
