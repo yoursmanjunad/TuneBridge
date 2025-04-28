@@ -42,9 +42,7 @@ export default function RootLayout({
         <TRPCReactProvider>{children}</TRPCReactProvider>
         <Toaster />
         </ThemeProvider>
-        <SignedOut>
-        <p>You are signed out.</p>
-      </SignedOut>
+
       </body>
     </ClerkProvider>
     </html>

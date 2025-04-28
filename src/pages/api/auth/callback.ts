@@ -1,19 +1,33 @@
 import axios from "axios";
 import { serialize } from "cookie";
-
 import type { NextApiRequest, NextApiResponse } from "next";
+import { MongoClient } from "mongodb";
+
+// MongoDB connection string from environment variables
+const uri = process.env.DATABASE_URL as string;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const code = req.query.code as string;
-
   const redirect_uri = "http://localhost:3000/api/auth/callback"; // must match Spotify settings
 
-  const params = new URLSearchParams();
-  params.append("grant_type", "authorization_code");
-  params.append("code", code);
-  params.append("redirect_uri", redirect_uri);
-
+  // Initialize MongoDB client
+  const client = new MongoClient(uri);
+  
   try {
+    // Connect to MongoDB
+    await client.connect();
+    console.log("✅ Connected to MongoDB");
+    
+    const db = client.db();
+    const usersCollection = db.collection("User");
+    const playlistsCollection = db.collection("Playlist");
+    const songsCollection = db.collection("Song");
+
+    const params = new URLSearchParams();
+    params.append("grant_type", "authorization_code");
+    params.append("code", code);
+    params.append("redirect_uri", redirect_uri);
+
     // 🔐 Exchange code for tokens
     const tokenResponse = await axios.post(
       "https://accounts.spotify.com/api/token",
@@ -31,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     );
 
     const accessToken = tokenResponse.data.access_token;
-    console.log("✅ Access Token:", accessToken);
+    console.log("✅ Access Token received");
 
     // 🎧 Fetch user's Spotify profile
     const userProfileResponse = await axios.get("https://api.spotify.com/v1/me", {
@@ -41,7 +55,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const userProfile = userProfileResponse.data;
-    // console.log("👤 User Profile:", userProfile);
+    console.log("👤 User Profile fetched:", userProfile.display_name);
+
+    // Since clerkId is required in the schema
+    const placeholderClerkId = `spotify_${userProfile.id}`;
+
+    // Find existing user by spotifyUserId or email
+    let user = await usersCollection.findOne({
+      $or: [
+        { spotifyUserId: userProfile.id },
+        { email: userProfile.email }
+      ]
+    });
+
+    if (!user) {
+      // Create a new user based on Spotify profile
+      const timestamp = new Date();
+      const userToInsert = {
+        email: userProfile.email,
+        username: `spotify_${userProfile.id.substring(0, 8)}`, // Using truncated Spotify ID as username with prefix
+        fullName: userProfile.display_name || '',
+        imageUrl: userProfile.images?.[0]?.url || null,
+        spotifyUserId: userProfile.id,
+        clerkId: placeholderClerkId,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        playlists: [] // Initialize empty playlists array
+      };
+      
+      const result = await usersCollection.insertOne(userToInsert);
+      user = { 
+        ...userToInsert, 
+        _id: result.insertedId 
+      };
+      console.log("✅ Created new user:", user._id);
+    } else {
+      // Update existing user with Spotify info
+      await usersCollection.updateOne(
+        { _id: user._id },
+        { 
+          $set: {
+            spotifyUserId: userProfile.id,
+            imageUrl: userProfile.images?.[0]?.url || user.imageUrl,
+            fullName: userProfile.display_name || user.fullName,
+            updatedAt: new Date()
+          }
+        }
+      );
+      console.log("✅ Updated existing user:", user._id);
+    }
 
     // 🎵 Fetch user playlists
     const playlistsResponse = await axios.get("https://api.spotify.com/v1/me/playlists", {
@@ -51,14 +113,50 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const playlists = playlistsResponse.data.items;
-    // console.log("🎶 User Playlists:", playlists);
+    console.log(`🎶 ${playlists.length} playlists found`);
 
-    // ✅ Fetch and log songs in each playlist
+    // Stats to track import progress
+    let importedCount = 0;
+    let skippedCount = 0;
+    let totalTracksImported = 0;
+
+    // Process each playlist
     for (const playlist of playlists) {
-      // console.log(`\n🎵 Playlist: ${playlist.name} by ${playlist.owner.display_name}`);
+      console.log(`Processing playlist: ${playlist.name}`);
+      
+      // Check if playlist already exists
+      const existingPlaylist = await playlistsCollection.findOne({
+        userId: user._id.toString(),
+        spotifyPlaylistId: playlist.id
+      });
 
-      const tracks: any[] = [];
+      if (existingPlaylist) {
+        console.log(`⏭️ Playlist "${playlist.name}" already exists, skipping`);
+        skippedCount++;
+        continue;
+      }
+      
+      // Create a new playlist record
+      const timestamp = new Date();
+      const newPlaylist = {
+        userId: user._id.toString(),
+        name: playlist.name,
+        source: "spotify", // assuming this is from Spotify
+        destination: "local", // default value, adjust as needed
+        status: "imported",
+        songCount: playlist.tracks.total,
+        playlistImage: playlist.images?.[0]?.url || null,
+        spotifyPlaylistId: playlist.id,
+        songs: [], // Initialize empty songs array
+        createdAt: timestamp
+      };
+      
+      const playlistResult = await playlistsCollection.insertOne(newPlaylist);
+      const playlistId = playlistResult.insertedId;
+
+      // Fetch all tracks for this playlist
       let nextUrl = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks`;
+      let trackOrder = 0;
 
       while (nextUrl) {
         const trackResponse = await axios.get(nextUrl, {
@@ -68,14 +166,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
 
         const data = trackResponse.data;
-        tracks.push(...data.items);
-        nextUrl = data.next; // pagination
+        
+        // Process and store each track
+        for (const item of data.items) {
+          if (item.track) {
+            trackOrder++;
+            
+            const song = {
+              playlistId: playlistId.toString(),
+              title: item.track.name,
+              artist: item.track.artists.map((artist: any) => artist.name).join(", "),
+              album: item.track.album?.name,
+              duration: item.track.duration_ms ? Math.round(item.track.duration_ms / 1000) : null,
+              sourceUrl: item.track.external_urls?.spotify || null,
+              order: trackOrder,
+              spotifyTrackId: item.track.id,
+              albumUrl: item.track.album?.images?.[0]?.url || null,
+              createdAt: new Date()
+            };
+            
+            await songsCollection.insertOne(song);
+          }
+        }
+        
+        nextUrl = data.next; // Continue pagination if more tracks exist
       }
-
-      // const songNames = tracks.map((item) => item.track?.name);
-      // console.log(`📀 ${songNames.length} Songs:`, songNames.slice(0, 10)); // log first 10
+      
+      // Update the final song count
+      await playlistsCollection.updateOne(
+        { _id: playlistId },
+        { $set: { songCount: trackOrder } }
+      );
+      
+      importedCount++;
+      totalTracksImported += trackOrder;
+      console.log(`✅ Added ${trackOrder} songs to playlist "${playlist.name}"`);
     }
 
+    // Set cookie for the access token
     res.setHeader(
       "Set-Cookie",
       serialize("spotify_token", accessToken, {
@@ -85,106 +213,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         path: "/",
       })
     );
-    res.redirect("/dashboard"); // or return JSON if needed
+    
+    // Instead of redirecting, add success information to the redirect URL
+    console.log("✅ Data import complete, redirecting to dashboard with stats");
+    
+    // Redirect with import stats as query parameters
+    res.redirect(`/dashboard?spotifyImport=success&importedPlaylists=${importedCount}&skippedPlaylists=${skippedCount}&totalTracks=${totalTracksImported}`);
+    
   } catch (error: any) {
     console.error("❌ Error:", error.response?.data || error.message);
-    res.status(500).json({ error: "Something went wrong" });
+    // Redirect with error information
+    res.redirect(`/dashboard?spotifyImport=error&message=${encodeURIComponent(error.message || "Failed to import Spotify playlists")}`);
+  } finally {
+    // Close the MongoDB connection
+    await client.close();
+    console.log("Closed MongoDB connection");
   }
 }
-
-// pages/api/auth/callback.ts
-// import type { NextApiRequest, NextApiResponse } from "next";
-// import axios from "axios";
-
-// export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-//   const code = req.query.code as string;
-
-//   if (!code) return res.status(400).json({ error: "Missing Spotify authorization code" });
-
-//   try {
-//     const tokenRes = await axios.post(
-//       "https://accounts.spotify.com/api/token",
-//       new URLSearchParams({
-//         grant_type: "authorization_code",
-//         code,
-//         redirect_uri: process.env.SPOTIFY_REDIRECT_URI!, // Must match your app settings
-//         client_id: process.env.SPOTIFY_CLIENT_ID!,
-//         client_secret: process.env.SPOTIFY_CLIENT_SECRET!,
-//       }),
-//       {
-//         headers: {
-//           "Content-Type": "application/x-www-form-urlencoded",
-//         },
-//       }
-//     );
-
-//     const { access_token } = tokenRes.data;
-
-//     // Set token in HttpOnly cookie
-//     res.setHeader("Set-Cookie", `spotify_token=${access_token}; Path=/; HttpOnly; SameSite=Lax`);
-
-//     // Redirect to your import route
-//     res.redirect("/api/spotify/import");
-//   } catch (error: any) {
-//     console.error("❌ Failed to get Spotify access token:", error.response?.data || error.message);
-//     res.status(500).json({ error: "Spotify token exchange failed" });
-//   }
-// }
-
-// pages/api/auth/callback.js
-// import axios from "axios";
-// import { serialize } from "cookie";
-// import type { NextApiRequest, NextApiResponse } from "next";
-
-// export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-//   const code = req.query.code as string;
-
-//   if (!code) {
-//     return res.status(400).json({ error: "Missing authorization code" });
-//   }
-
-//   const redirect_uri = "http://localhost:3000/api/auth/callback"; // must match Spotify settings
-
-//   const params = new URLSearchParams();
-//   params.append("grant_type", "authorization_code");
-//   params.append("code", code);
-//   params.append("redirect_uri", redirect_uri);
-
-//   try {
-//     // 🔐 Exchange code for tokens
-//     const tokenResponse = await axios.post(
-//       "https://accounts.spotify.com/api/token",
-//       params,
-//       {
-//         headers: {
-//           "Content-Type": "application/x-www-form-urlencoded",
-//           Authorization:
-//             "Basic " +
-//             Buffer.from(
-//               `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-//             ).toString("base64"),
-//         },
-//       }
-//     );
-
-//     const accessToken = tokenResponse.data.access_token;
-//     console.log("✅ Access Token:", accessToken);
-
-//     // Fetch user data as needed...
-
-//     // Set the token in a secure cookie
-//     res.setHeader(
-//       "Set-Cookie",
-//       serialize("spotify_token", accessToken, {
-//         httpOnly: true,
-//         secure: process.env.NODE_ENV === "production",
-//         maxAge: 3600,
-//         path: "/",
-//       })
-//     );
-//     res.redirect("/dashboard"); // Redirect to your dashboard or desired route
-//   } catch (error: any) {
-//     console.error("❌ Error:", error.response?.data || error.message);
-//     res.status(500).json({ error: "Something went wrong" });
-//   }
-// }
